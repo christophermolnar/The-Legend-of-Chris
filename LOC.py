@@ -21,7 +21,8 @@ BLUE = (0, 0, 255)
 GREEN = (0, 255, 0)
 PURPLE = (138, 43, 226)
 PINK = (255, 192,203)
-Ground= (255,218,185)
+DARK_PINK = (255, 0, 255)
+GROUND = (255,218,185)
 
 class Player(pygame.sprite.Sprite):
 
@@ -66,24 +67,30 @@ class Player(pygame.sprite.Sprite):
         walkL2 = pygame.Surface(size).convert()
         walkL2.fill(ORANGE) 
         rest = pygame.Surface(size).convert()
-        rest.fill(Ground)          
+        rest.fill(GROUND)      
+        attack = pygame.Surface(size).convert()
+        attack.fill(DARK_PINK)           
         
         animation_dict = {'walkL': [walkL1, walkL2],
                       'walkR': [walkR1, walkR2],
                       'walkU': [walkU1, walkU2],
                       'walkD': [walkD1, walkD2],
-                      'rest': [rest, rest]}
+                      'rest': [rest],
+                      'attack': [attack]}
         
         return animation_dict    
 
     def animation(self):
-        if (pygame.time.get_ticks()- self.timer) > 200:
+        if (pygame.time.get_ticks()- self.timer) > 200: # Alternate between sprites in the list
             if self.image_index < (len(self.image_list) - 1):
                 self.image_index += 1
             else:
                 self.image_index = 0
             self.timer = pygame.time.get_ticks()
-
+        
+        if (self.image_index > (len(self.image_list) - 1)): # Sanity Check: since rest and attack contain 1 image in their list
+            return self.image_list[0]  
+        
         return self.image_list[self.image_index]    
         
     def update(self):
@@ -91,19 +98,21 @@ class Player(pygame.sprite.Sprite):
         self.vel.x = 0
         self.vel.y = 0               
         keys = pygame.key.get_pressed()
-        if (keys[pygame.K_LEFT]):
+        if (keys[pygame.K_SPACE]): # Spacebar = Attack
+            self.image_list = self.animation_list['attack']
+        elif (keys[pygame.K_LEFT]): # Left Arrow Key = Move Left
             self.vel.x = -1
             self.image_list = self.animation_list['walkL']
-        elif (keys[pygame.K_RIGHT]):
+        elif (keys[pygame.K_RIGHT]): # Right Arrow Key = Move Right
             self.vel.x = 1
             self.image_list = self.animation_list['walkR']
-        elif (keys[pygame.K_UP]):
+        elif (keys[pygame.K_UP]): # Up Arrow Key = Move Up
             self.vel.y = -1
             self.image_list = self.animation_list['walkU']
-        elif (keys[pygame.K_DOWN]):
+        elif (keys[pygame.K_DOWN]): # Down Arrow Key = Move Down
             self.vel.y = 1
             self.image_list = self.animation_list['walkD']
-        else:
+        else: # Nothing = Rest
             self.image_list = self.animation_list['rest']
 
         self.pos += self.vel
@@ -144,17 +153,6 @@ class Game:
             if (event.type == pygame.QUIT):
                 self.playing = False
                 self.running = False
-            #if (event.type == KEYDOWN):
-                #if event.key == K_DOWN: #Check to see if down arrow key is pressed
-                    #direction = "down"
-                #elif event.key == K_RIGHT: #Check to see if right arrow key is pressed
-                    #direction = "right"
-                #elif event.key == K_LEFT: #Check to see if left arrow key is pressed
-                    #direction = "left"
-                #elif event.key == K_UP: #Check to see if up arrow key is pressed
-                    #direction = "up"   
-                #else:
-                    #pass #resting
                 
 
     def draw(self):
