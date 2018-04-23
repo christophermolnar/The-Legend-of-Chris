@@ -53,13 +53,6 @@ class Player(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.rect.center = (WIDTH/2, HEIGHT/2)   
         self.timer = 0.0
-        #self.state_dict = self.create_state_dict()
-        #self.state = 'resting'        
-        
-        #self.image = pygame.Surface((40,40))
-        #self.image.fill(PURPLE)
-        #self.rect = self.image.get_rect()
-        #self.rect.center = (WIDTH/2, HEIGHT/2)
         self.pos = pygame.math.Vector2(WIDTH/2, HEIGHT/2)
         self.vel = pygame.math.Vector2(0, 0)
         #self.acc = pygame.math.Vector2(0, 0)
@@ -87,6 +80,7 @@ class Player(pygame.sprite.Sprite):
         attackL = ChrisALImg
         attackR = ChrisARImg         
         
+        # Animation Dictionary Dictionary (A Dictionay of actions with a Dictionary of directions to give the proper animation list)
         animation_dict = {'walk': {'U': [walkU1, walkU2], 'D': [walkD1, walkD2], 'L': [walkL1, walkL2], 'R': [walkR1, walkR2]},
                       'rest': {'U': [restU], 'D': [restD], 'L': [restL], 'R': [restR]},
                       'attack': {'U': [attackU], 'D': [attackD], 'L': [attackL], 'R': [attackR]}}
