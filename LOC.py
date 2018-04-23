@@ -24,14 +24,30 @@ PINK = (255, 192,203)
 DARK_PINK = (255, 0, 255)
 GROUND = (255,218,185)
 
+#Moving Pictures
+ChrisF1Img= pygame.image.load("Pictures/chris forward 1.png")
+ChrisF2Img= pygame.image.load("Pictures/chris forward 2.png")
+ChrisB1Img= pygame.image.load("Pictures/chris backwards 1.png")
+ChrisB2Img= pygame.image.load("Pictures/chris backwards 2.png")
+ChrisL1Img= pygame.image.load("Pictures/chris left 1.png")
+ChrisL2Img= pygame.image.load("Pictures/chris left 2.png")
+ChrisR1Img= pygame.image.load("Pictures/chris right 1.png") 
+ChrisR2Img= pygame.image.load("Pictures/chris right 2.png") 
+#Attack Pictures
+ChrisAFImg= pygame.image.load("Pictures/chris attack forward.png")
+ChrisABImg= pygame.image.load("Pictures/chris attack back.png")
+ChrisALImg= pygame.image.load("Pictures/chris attack left.png")
+ChrisARImg= pygame.image.load("Pictures/chris attack right.png")
+
 class Player(pygame.sprite.Sprite):
 
     def __init__(self, game):
         pygame.sprite.Sprite.__init__(self)
         self.game = game
-        
+        self.direction = 'U'
+        self.state = 'walk' 
         self.animation_list = self.create_animation_dict()
-        self.image_list = self.animation_list['walkU']
+        self.image_list = self.animation_list[self.state][self.direction]
         self.image_index = 0
         self.image = self.image_list[self.image_index]
         self.rect = self.image.get_rect()
@@ -49,34 +65,31 @@ class Player(pygame.sprite.Sprite):
         #self.acc = pygame.math.Vector2(0, 0)
         
     def create_animation_dict(self):
-        size = (40,40)
-        walkU1 = pygame.Surface(size).convert()
-        walkU1.fill(GREEN)
-        walkU2 = pygame.Surface(size).convert()
-        walkU2.fill(WHITE)          
-        walkR1 = pygame.Surface(size).convert()
-        walkR1.fill(RED)
-        walkR2 = pygame.Surface(size).convert()
-        walkR2.fill(BLUE) 
-        walkD1 = pygame.Surface(size).convert()
-        walkD1.fill(YELLOW)
-        walkD2 = pygame.Surface(size).convert()
-        walkD2.fill(PURPLE)          
-        walkL1 = pygame.Surface(size).convert()
-        walkL1.fill(PINK)
-        walkL2 = pygame.Surface(size).convert()
-        walkL2.fill(ORANGE) 
-        rest = pygame.Surface(size).convert()
-        rest.fill(GROUND)      
-        attack = pygame.Surface(size).convert()
-        attack.fill(DARK_PINK)           
         
-        animation_dict = {'walkL': [walkL1, walkL2],
-                      'walkR': [walkR1, walkR2],
-                      'walkU': [walkU1, walkU2],
-                      'walkD': [walkD1, walkD2],
-                      'rest': [rest],
-                      'attack': [attack]}
+        # ***Will Resize Later***
+        size = (32,32) 
+        # *** ***
+        
+        walkU1 = ChrisB1Img
+        walkU2 = ChrisB2Img
+        walkD1 = ChrisF1Img
+        walkD2 = ChrisF2Img
+        walkL1 = ChrisL1Img
+        walkL2 = ChrisL2Img
+        walkR1 = ChrisR1Img
+        walkR2 = ChrisR2Img
+        restU = ChrisB1Img
+        restD = ChrisF1Img
+        restL = ChrisL1Img
+        restR = ChrisR1Img
+        attackU = ChrisABImg
+        attackD = ChrisAFImg
+        attackL = ChrisALImg
+        attackR = ChrisARImg         
+        
+        animation_dict = {'walk': {'U': [walkU1, walkU2], 'D': [walkD1, walkD2], 'L': [walkL1, walkL2], 'R': [walkR1, walkR2]},
+                      'rest': {'U': [restU], 'D': [restD], 'L': [restL], 'R': [restR]},
+                      'attack': {'U': [attackU], 'D': [attackD], 'L': [attackL], 'R': [attackR]}}
         
         return animation_dict    
 
@@ -99,21 +112,27 @@ class Player(pygame.sprite.Sprite):
         self.vel.y = 0               
         keys = pygame.key.get_pressed()
         if (keys[pygame.K_SPACE]): # Spacebar = Attack
-            self.image_list = self.animation_list['attack']
-        elif (keys[pygame.K_LEFT]): # Left Arrow Key = Move Left
-            self.vel.x = -1
-            self.image_list = self.animation_list['walkL']
-        elif (keys[pygame.K_RIGHT]): # Right Arrow Key = Move Right
-            self.vel.x = 1
-            self.image_list = self.animation_list['walkR']
+            self.state = "attack"
         elif (keys[pygame.K_UP]): # Up Arrow Key = Move Up
+            self.state = "walk"
+            self.direction = 'U'
             self.vel.y = -1
-            self.image_list = self.animation_list['walkU']
         elif (keys[pygame.K_DOWN]): # Down Arrow Key = Move Down
-            self.vel.y = 1
-            self.image_list = self.animation_list['walkD']
+            self.state = "walk"
+            self.direction = 'D'
+            self.vel.y = 1            
+        elif (keys[pygame.K_LEFT]): # Left Arrow Key = Move Left
+            self.state = "walk"
+            self.direction = 'L'
+            self.vel.x = -1
+        elif (keys[pygame.K_RIGHT]): # Right Arrow Key = Move Right
+            self.state = "walk"
+            self.direction = 'R'
+            self.vel.x = 1
         else: # Nothing = Rest
-            self.image_list = self.animation_list['rest']
+            self.state = "rest"
+            
+        self.image_list = self.animation_list[self.state][self.direction]
 
         self.pos += self.vel
         self.rect.midbottom = self.pos
