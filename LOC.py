@@ -27,6 +27,9 @@ GROUND = (255,218,185)
 LIGHT_GREY = (100, 100, 100)
 BROWN = (139, 69, 19)
 
+# Player Stats
+PLAYER_SPEED = 100
+
 #Moving Pictures
 ChrisF1Img= pygame.image.load("Pictures/chris forward 1.png")
 ChrisF2Img= pygame.image.load("Pictures/chris forward 2.png")
@@ -54,7 +57,7 @@ class Player(pygame.sprite.Sprite):
         self.image_index = 0
         self.image = self.image_list[self.image_index]
         self.rect = self.image.get_rect()
-        self.rect.center = (15, 15)   
+        self.rect.topleft = (15, 15)   
         self.timer = 0.0
         self.pos = pygame.math.Vector2(15, 15)
         self.vel = pygame.math.Vector2(0, 0)
@@ -74,10 +77,6 @@ class Player(pygame.sprite.Sprite):
         walkL2 = ChrisL2Img
         walkR1 = ChrisR1Img
         walkR2 = ChrisR2Img
-        restU = ChrisB1Img
-        restD = ChrisF1Img
-        restL = ChrisL1Img
-        restR = ChrisR1Img
         attackU = ChrisABImg
         attackD = ChrisAFImg
         attackL = ChrisALImg
@@ -85,7 +84,6 @@ class Player(pygame.sprite.Sprite):
         
         # Animation Dictionary Dictionary (A Dictionay of actions with a Dictionary of directions to give the proper animation list)
         animation_dict = {'walk': {'U': [walkU1, walkU2], 'D': [walkD1, walkD2], 'L': [walkL1, walkL2], 'R': [walkR1, walkR2]},
-                      'rest': {'U': [restU], 'D': [restD], 'L': [restL], 'R': [restR]},
                       'attack': {'U': [attackU], 'D': [attackD], 'L': [attackL], 'R': [attackR]}}
         
         return animation_dict    
@@ -100,25 +98,43 @@ class Player(pygame.sprite.Sprite):
             return self.image_list[0]  
         
         return self.image_list[self.image_index]    
-        
-    def move(self, dx = 0, dy = 0):
-        if not self.collision(dx, dy):
-            self.pos.x += dx
-            self.pos.y += dy
-        
-    def collision(self, dx = 0, dy = 0):
-        for walls in self.game.walls:
-            if ((walls.x == self.pos.x + dx) and (walls.y == self.pos.y + dy)):
-                return True
-        return False
     
-    def change_sprite(self):
-        self.image_list = self.animation_list[self.state][self.direction]
-        self.image = self.animation()
+    def get_keys(self):
+        self.vel = (0, 0)
+        keys =pygame.key.get_pressed()
+        if (keys[pygame.K_LEFT] or keys[pygame.K_a]):
+            self.vel = (-PLAYER_SPEED, 0)
+            self.state = "walk"
+            self.direction = 'L'            
+        elif (keys[pygame.K_RIGHT] or keys[pygame.K_d]):
+            self.vel = (PLAYER_SPEED, 0)
+            self.state = "walk"
+            self.direction = 'R'              
+        elif (keys[pygame.K_UP] or keys[pygame.K_w]):
+            self.vel = (0, -PLAYER_SPEED)
+            self.state = "walk"
+            self.direction = 'U'              
+        elif (keys[pygame.K_DOWN] or keys[pygame.K_s]):
+            self.vel = (0, PLAYER_SPEED)
+            self.state = "walk"
+            self.direction = 'D'  
+        #elif (keys[pygame.K_SPACE]):
+            #self.state = "attack"
     
     def update(self): 
-        self.rect.x = self.pos.x * TILE_SIZE
-        self.rect.y = self.pos.y * TILE_SIZE
+        previous_direction = self.direction
+        self.get_keys()
+        if (self.vel[0] != 0 or self.vel[1] != 0): #if the player moved
+            self.pos.x += self.vel[0] * self.game.dt
+            self.pos.y += self.vel[1]* self.game.dt
+            self.rect.topleft = (self.pos.x, self.pos.y)
+            if ((self.game.counter % 10 == 0) or (previous_direction != self.direction)): # alternate every 10 frames or if the direction changes
+                self.image_list = self.animation_list[self.state][self.direction]
+                self.image = self.animation()
+            if pygame.sprite.spritecollideany(self, self.game.walls):
+                self.pos.x -= self.vel[0] * self.game.dt
+                self.pos.y -= self.vel[1]* self.game.dt
+                self.rect.topleft = (self.pos.x, self.pos.y)            
         
 
 class Wall(pygame.sprite.Sprite):
@@ -144,7 +160,6 @@ class Game:
         self.clock = pygame.time.Clock()
         self.running = True
         self.font_name = pygame.font.match_font(FONT_NAME)
-        pygame.key.set_repeat(250, 100)
 
     def new(self):
         self.all_sprites = pygame.sprite.Group()
@@ -165,8 +180,10 @@ class Game:
     def run(self):
         self.playing = True
         self.timer = pygame.time.get_ticks()
+        self.counter = 0
         while self.playing:
             self.dt = self.clock.tick(FPS) / 1000
+            self.counter += 1
             self.events()
             self.update()
             self.draw()
@@ -181,43 +198,12 @@ class Game:
             # Check for closing the window
             if (event.type == pygame.QUIT):
                 self.playing = False
-                self.running = False
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_ESCAPE:
-                    self.quit()
-                if event.key == pygame.K_SPACE: 
-                    self.player.state = "attack"  
-                    self.player.change_sprite()
-                if event.key == pygame.K_LEFT:
-                    self.player.move(dx=-1)
-                    self.player.state = "walk"
-                    self.player.direction = 'L'
-                    self.player.change_sprite()
-                if event.key == pygame.K_RIGHT:
-                    self.player.move(dx=1)
-                    self.player.state = "walk"
-                    self.player.direction = 'R'
-                    self.player.change_sprite()
-                if event.key == pygame.K_UP:
-                    self.player.move(dy=-1)
-                    self.player.state = "walk"
-                    self.player.direction = 'U'    
-                    self.player.change_sprite()
-                if event.key == pygame.K_DOWN:
-                    self.player.move(dy=1)   
-                    self.player.state = "walk"
-                    self.player.direction = 'D'
-                    self.player.change_sprite()
-            else:
-                self.player.state = "rest"
-                self.player.change_sprite() #WITH THIS THE SPRITE ALWAYS ENDS on LINK PICTURE 1
-                # NEED TO WORK ON REST ANIMATION
-                
+                self.running = False                
 
     def draw(self):
             # Game Loop - Draw
             self.screen.fill(BLACK)
-            self.draw_grid()
+            #self.draw_grid()
             self.all_sprites.draw(self.screen)
             # *After drawing everything, flip the display
             pygame.display.flip()
