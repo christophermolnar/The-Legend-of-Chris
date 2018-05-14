@@ -2,11 +2,13 @@
 import pygame
 import random
 import math
+import sys
+from os import path
 #vec = pygame.math.Vector2
 
 # Constants
-HEIGHT = 500
-WIDTH = 500
+HEIGHT = 560
+WIDTH = 560
 TITLE = "LOZ"
 FPS = 60
 FONT_NAME = "arial"
@@ -24,26 +26,36 @@ PURPLE = (138, 43, 226)
 PINK = (255, 192,203)
 DARK_PINK = (255, 0, 255)
 GROUND = (255,218,185)
+TAN = (210, 184, 135)
+PERU = (205, 133, 63)
 LIGHT_GREY = (100, 100, 100)
 BROWN = (139, 69, 19)
 
 # Player Stats
 PLAYER_SPEED = 100
 
+#Pictures
+pictures_path = "Pictures/"
+
+#Maps
+map_directory = "\\Maps\\"
+
 #Moving Pictures
-ChrisF1Img= pygame.image.load("Pictures/chris forward 1.png")
-ChrisF2Img= pygame.image.load("Pictures/chris forward 2.png")
-ChrisB1Img= pygame.image.load("Pictures/chris backwards 1.png")
-ChrisB2Img= pygame.image.load("Pictures/chris backwards 2.png")
-ChrisL1Img= pygame.image.load("Pictures/chris left 1.png")
-ChrisL2Img= pygame.image.load("Pictures/chris left 2.png")
-ChrisR1Img= pygame.image.load("Pictures/chris right 1.png") 
-ChrisR2Img= pygame.image.load("Pictures/chris right 2.png") 
+ChrisF1Img= pygame.image.load(pictures_path + "chris forward 1.png")
+ChrisF2Img= pygame.image.load(pictures_path + "chris forward 2.png")
+ChrisB1Img= pygame.image.load(pictures_path + "chris backwards 1.png")
+ChrisB2Img= pygame.image.load(pictures_path + "chris backwards 2.png")
+ChrisL1Img= pygame.image.load(pictures_path + "chris left 1.png")
+ChrisL2Img= pygame.image.load(pictures_path + "chris left 2.png")
+ChrisR1Img= pygame.image.load(pictures_path + "chris right 1.png") 
+ChrisR2Img= pygame.image.load(pictures_path + "chris right 2.png") 
 #Attack Pictures
-ChrisAFImg= pygame.image.load("Pictures/chris attack forward.png")
-ChrisABImg= pygame.image.load("Pictures/chris attack back.png")
-ChrisALImg= pygame.image.load("Pictures/chris attack left.png")
-ChrisARImg= pygame.image.load("Pictures/chris attack right.png")
+ChrisAFImg= pygame.image.load(pictures_path + "chris attack forward.png")
+ChrisABImg= pygame.image.load(pictures_path + "chris attack back.png")
+ChrisALImg= pygame.image.load(pictures_path + "chris attack left.png")
+ChrisARImg= pygame.image.load(pictures_path + "chris attack right.png")
+#Obstacles
+BushImg = pygame.image.load(pictures_path + "bush.png")
 
 class Player(pygame.sprite.Sprite):
 
@@ -57,9 +69,9 @@ class Player(pygame.sprite.Sprite):
         self.image_index = 0
         self.image = self.image_list[self.image_index]
         self.rect = self.image.get_rect()
-        self.rect.topleft = (15, 15)   
+        self.rect.topleft = (15 * TILE_SIZE, 15 * TILE_SIZE)  
         self.timer = 0.0
-        self.pos = pygame.math.Vector2(15, 15)
+        self.pos = pygame.math.Vector2(15 * TILE_SIZE, 15 * TILE_SIZE)
         self.vel = pygame.math.Vector2(0, 0)
         #self.acc = pygame.math.Vector2(0, 0)
         
@@ -102,7 +114,10 @@ class Player(pygame.sprite.Sprite):
     def get_keys(self):
         self.vel = (0, 0)
         keys =pygame.key.get_pressed()
-        if (keys[pygame.K_LEFT] or keys[pygame.K_a]):
+        self.state = "rest"
+        if (keys[pygame.K_SPACE]):
+            self.state = "attack"        
+        elif (keys[pygame.K_LEFT] or keys[pygame.K_a]):
             self.vel = (-PLAYER_SPEED, 0)
             self.state = "walk"
             self.direction = 'L'            
@@ -118,17 +133,16 @@ class Player(pygame.sprite.Sprite):
             self.vel = (0, PLAYER_SPEED)
             self.state = "walk"
             self.direction = 'D'  
-        #elif (keys[pygame.K_SPACE]):
-            #self.state = "attack"
     
     def update(self): 
         previous_direction = self.direction
+        previous_state = self.state
         self.get_keys()
-        if (self.vel[0] != 0 or self.vel[1] != 0): #if the player moved
+        if (self.state != 'rest'): #if the player moved
             self.pos.x += self.vel[0] * self.game.dt
-            self.pos.y += self.vel[1]* self.game.dt
+            self.pos.y += self.vel[1] * self.game.dt
             self.rect.topleft = (self.pos.x, self.pos.y)
-            if ((self.game.counter % 10 == 0) or (previous_direction != self.direction)): # alternate every 10 frames or if the direction changes
+            if ((self.game.counter % 10 == 0) or (previous_direction != self.direction) or (self.state != previous_state)): # alternate every 10 frames or if the direction or state changes
                 self.image_list = self.animation_list[self.state][self.direction]
                 self.image = self.animation()
             if pygame.sprite.spritecollideany(self, self.game.walls):
@@ -151,6 +165,22 @@ class Wall(pygame.sprite.Sprite):
         self.rect.x = x * TILE_SIZE
         self.rect.y = y * TILE_SIZE
 
+class Bush(Wall):
+    
+    def __init__(self, game, x, y):
+        Wall.__init__(self, game, x, y)
+        self.image = BushImg
+
+class Map:
+    
+    def __init__(self, filename):
+        self.data = []
+        game_folder = path.dirname(__file__)
+        file_path = game_folder + filename
+        with open(file_path, 'rt') as file:
+            for line in file:
+                self.data.append(line)
+
 class Game:
 
     def __init__(self):
@@ -165,10 +195,9 @@ class Game:
         self.all_sprites = pygame.sprite.Group()
         self.player = Player(self)
         self.all_sprites.add(self.player)
+        self.map = Map(map_directory + "Map1.txt")
         self.walls = pygame.sprite.Group()
-        Wall(self, 5, 5)
-        Wall(self, 6, 5)
-        Wall(self, 7, 5)
+        self.draw_scenery()
         self.run()
         
     def draw_grid(self):
@@ -176,6 +205,13 @@ class Game:
             pygame.draw.line(self.screen, LIGHT_GREY, (x, 0), (x, HEIGHT))
         for y in range(0, HEIGHT, TILE_SIZE):
             pygame.draw.line(self.screen, LIGHT_GREY, (0, y), (WIDTH, y))    
+    
+    def draw_scenery(self):
+        for r in range (0, WIDTH//TILE_SIZE):
+            for c in range (0, HEIGHT//TILE_SIZE):
+                if (self.map.data[r][c] == '1'):
+                    Bush(self, r, c)
+        
 
     def run(self):
         self.playing = True
@@ -193,7 +229,6 @@ class Game:
 
     def events(self):
         #Game loop - Events
-        self.player.state = "rest"
         for event in pygame.event.get():
             # Check for closing the window
             if (event.type == pygame.QUIT):
@@ -202,8 +237,8 @@ class Game:
 
     def draw(self):
             # Game Loop - Draw
-            self.screen.fill(BLACK)
-            #self.draw_grid()
+            self.screen.fill(GROUND)
+            self.draw_grid()
             self.all_sprites.draw(self.screen)
             # *After drawing everything, flip the display
             pygame.display.flip()
