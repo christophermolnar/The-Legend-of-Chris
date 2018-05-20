@@ -4,41 +4,8 @@ import random
 import math
 import sys
 from os import path
+from GameSetting import *
 #vec = pygame.math.Vector2
-
-# Constants
-HEIGHT = 560
-WIDTH = 560
-TITLE = "LOZ"
-FPS = 60
-FONT_NAME = "arial"
-TILE_SIZE = 16
-
-# Define Colours
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-ORANGE = (255, 186, 0)
-YELLOW = (255, 255, 0)
-BLUE = (0, 0, 255)
-GREEN = (0, 255, 0)
-PURPLE = (138, 43, 226)
-PINK = (255, 192,203)
-DARK_PINK = (255, 0, 255)
-GROUND = (255,218,185)
-TAN = (210, 184, 135)
-PERU = (205, 133, 63)
-LIGHT_GREY = (100, 100, 100)
-BROWN = (139, 69, 19)
-
-# Player Stats
-PLAYER_SPEED = 100
-
-#Pictures
-pictures_path = "Pictures/"
-
-#Maps
-map_directory = "\\Maps\\"
 
 #Moving Pictures
 ChrisF1Img= pygame.image.load(pictures_path + "chris forward 1.png")
@@ -106,9 +73,6 @@ class Player(pygame.sprite.Sprite):
         else:
             self.image_index = 0
         
-        if (self.image_index > (len(self.image_list) - 1)): # Sanity Check: since rest and attack contain 1 image in their list
-            return self.image_list[0]  
-        
         return self.image_list[self.image_index]    
     
     def get_keys(self):
@@ -148,7 +112,10 @@ class Player(pygame.sprite.Sprite):
             if pygame.sprite.spritecollideany(self, self.game.walls):
                 self.pos.x -= self.vel[0] * self.game.dt
                 self.pos.y -= self.vel[1]* self.game.dt
-                self.rect.topleft = (self.pos.x, self.pos.y)            
+                self.rect.topleft = (self.pos.x, self.pos.y)  
+        elif (previous_state == "attack"): # After attacking switch back to a standard image
+            self.image_list = self.animation_list["walk"][self.direction]                   
+            self.image = self.animation()            
         
 
 class Wall(pygame.sprite.Sprite):
