@@ -23,6 +23,7 @@ ChrisALImg= pygame.image.load(pictures_path + "chris attack left.png")
 ChrisARImg= pygame.image.load(pictures_path + "chris attack right.png")
 #Obstacles
 BushImg = pygame.image.load(pictures_path + "bush.png")
+RupeeImg = pygame.image.load(pictures_path + "rupee.png")
 
 class Player(pygame.sprite.Sprite):
 
@@ -111,8 +112,11 @@ class Player(pygame.sprite.Sprite):
                 self.image = self.animation()
             if pygame.sprite.spritecollideany(self, self.game.walls):
                 self.pos.x -= self.vel[0] * self.game.dt
-                self.pos.y -= self.vel[1]* self.game.dt
+                self.pos.y -= self.vel[1] * self.game.dt
                 self.rect.topleft = (self.pos.x, self.pos.y)  
+            collects_rupee =  pygame.sprite.spritecollide(self, self.game.items, True) # Collect Rupee
+            if (collects_rupee):
+                pass
         elif (previous_state == "attack"): # After attacking switch back to a standard image
             self.image_list = self.animation_list["walk"][self.direction]                   
             self.image = self.animation()            
@@ -121,8 +125,6 @@ class Player(pygame.sprite.Sprite):
 class Wall(pygame.sprite.Sprite):
     
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.walls
-        pygame.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pygame.Surface((TILE_SIZE, TILE_SIZE))
         self.image.fill(BROWN)
@@ -136,7 +138,17 @@ class Bush(Wall):
     
     def __init__(self, game, x, y):
         Wall.__init__(self, game, x, y)
+        self.groups = game.all_sprites, game.walls
+        pygame.sprite.Sprite.__init__(self, self.groups)        
         self.image = BushImg
+
+class Rupee(Wall):
+    
+    def __init__(self, game, x, y):
+        Wall.__init__(self, game, x, y)
+        self.image = RupeeImg
+        self.groups = game.all_sprites, game.items
+        pygame.sprite.Sprite.__init__(self, self.groups)
 
 class Map:
     
@@ -164,6 +176,7 @@ class Game:
         self.all_sprites.add(self.player)
         self.map = Map(map_directory + "Map1.txt")
         self.walls = pygame.sprite.Group()
+        self.items = pygame.sprite.Group()
         self.draw_scenery()
         self.run()
         
@@ -174,10 +187,13 @@ class Game:
             pygame.draw.line(self.screen, LIGHT_GREY, (0, y), (WIDTH, y))    
     
     def draw_scenery(self):
-        for r in range (0, WIDTH//TILE_SIZE):
-            for c in range (0, HEIGHT//TILE_SIZE):
-                if (self.map.data[r][c] == '1'):
+        for r in range (0, HEIGHT//TILE_SIZE):
+            for c in range (0, WIDTH//TILE_SIZE):
+                if (self.map.data[c][r] == 'B'):
                     Bush(self, r, c)
+                if (self.map.data[c][r] == 'R'):
+                    Rupee(self, r, c)
+                    
         
 
     def run(self):
