@@ -1,10 +1,10 @@
-
 import pygame
 import random
 import math
 import sys
 from os import path
 from GameSetting import *
+from Enemies import *
 #vec = pygame.math.Vector2
 
 #Moving Pictures
@@ -25,6 +25,8 @@ ChrisARImg= pygame.image.load(pictures_path + "chris attack right.png")
 BushImg = pygame.image.load(pictures_path + "bush.png")
 RupeeImg = pygame.image.load(pictures_path + "rupee.png")
 
+# Player
+# The player controlled by the user
 class Player(pygame.sprite.Sprite):
 
     def __init__(self, game):
@@ -110,10 +112,17 @@ class Player(pygame.sprite.Sprite):
             if ((self.game.counter % 10 == 0) or (previous_direction != self.direction) or (self.state != previous_state)): # alternate every 10 frames or if the direction or state changes
                 self.image_list = self.animation_list[self.state][self.direction]
                 self.image = self.animation()
-            if pygame.sprite.spritecollideany(self, self.game.walls):
+            if pygame.sprite.spritecollideany(self, self.game.resources):
                 self.pos.x -= self.vel[0] * self.game.dt
                 self.pos.y -= self.vel[1] * self.game.dt
                 self.rect.topleft = (self.pos.x, self.pos.y)  
+            if pygame.sprite.spritecollideany(self, self.game.enemies):
+                if (self.state == "attack"):
+                    defeat_monster =  pygame.sprite.spritecollide(self, self.game.enemies, True) # Collect Rupee
+                #else: #Monster Attacks you
+                    #Player takes a damage
+                    #Check health
+                    #Lose points            
             collects_rupee =  pygame.sprite.spritecollide(self, self.game.items, True) # Collect Rupee
             if (collects_rupee):
                 pass
@@ -122,7 +131,7 @@ class Player(pygame.sprite.Sprite):
             self.image = self.animation()            
         
 
-class Wall(pygame.sprite.Sprite):
+class Resource(pygame.sprite.Sprite):
     
     def __init__(self, game, x, y):
         self.game = game
@@ -134,18 +143,31 @@ class Wall(pygame.sprite.Sprite):
         self.rect.x = x * TILE_SIZE
         self.rect.y = y * TILE_SIZE
 
-class Bush(Wall):
+class Bush(Resource):
     
     def __init__(self, game, x, y):
-        Wall.__init__(self, game, x, y)
-        self.groups = game.all_sprites, game.walls
+        Resource.__init__(self, game, x, y)
+        self.groups = game.all_sprites, game.resources
         pygame.sprite.Sprite.__init__(self, self.groups)        
         self.image = BushImg
 
-class Rupee(Wall):
+
+class Item(pygame.sprite.Sprite):
     
     def __init__(self, game, x, y):
-        Wall.__init__(self, game, x, y)
+        self.game = game
+        self.image = pygame.Surface((TILE_SIZE, TILE_SIZE))
+        self.image.fill(YELLOW)
+        self.rect = self.image.get_rect()
+        self.x = x
+        self.y = y
+        self.rect.x = x * TILE_SIZE
+        self.rect.y = y * TILE_SIZE
+        
+class Rupee(Item):
+    
+    def __init__(self, game, x, y):
+        Item.__init__(self, game, x, y)
         self.image = RupeeImg
         self.groups = game.all_sprites, game.items
         pygame.sprite.Sprite.__init__(self, self.groups)
@@ -175,9 +197,14 @@ class Game:
         self.player = Player(self)
         self.all_sprites.add(self.player)
         self.map = Map(map_directory + "Map1.txt")
-        self.walls = pygame.sprite.Group()
+        self.resources = pygame.sprite.Group()
         self.items = pygame.sprite.Group()
+        
+        # enemy group
+        self.enemies = pygame.sprite.Group()
+        
         self.draw_scenery()
+        self.draw_enemy()
         self.run()
         
     def draw_grid(self):
@@ -193,7 +220,9 @@ class Game:
                     Bush(self, r, c)
                 if (self.map.data[c][r] == 'R'):
                     Rupee(self, r, c)
-                    
+    
+    def draw_enemy(self):
+        OrangeOcto(self, 25, 25)
         
 
     def run(self):

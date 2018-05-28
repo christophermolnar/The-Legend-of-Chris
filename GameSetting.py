@@ -1,7 +1,7 @@
 # Constants
 HEIGHT = 560
 WIDTH = 560
-TITLE = "LOZ"
+TITLE = "LOC"
 FPS = 60
 FONT_NAME = "arial"
 TILE_SIZE = 16
