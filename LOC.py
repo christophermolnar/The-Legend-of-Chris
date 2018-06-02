@@ -44,7 +44,11 @@ class Player(pygame.sprite.Sprite):
         self.pos = pygame.math.Vector2(15 * TILE_SIZE, 15 * TILE_SIZE)
         self.vel = pygame.math.Vector2(0, 0)
         #self.acc = pygame.math.Vector2(0, 0)
-        
+    
+    # create_animation_dict
+    # Creates a dictionary with the players sprites
+    # The Dictionaries keys are walk, and attack: the corresponding values are dictionaries with a list of sprites inside
+    # Returns: A dictionary with the player sprites
     def create_animation_dict(self):
         
         # ***Will Resize Later***
@@ -70,6 +74,9 @@ class Player(pygame.sprite.Sprite):
         
         return animation_dict    
 
+    # animation
+    # Alternates the sprites
+    # Returns: The players sprite to display
     def animation(self):
         if self.image_index < (len(self.image_list) - 1):
             self.image_index += 1
@@ -78,6 +85,8 @@ class Player(pygame.sprite.Sprite):
         
         return self.image_list[self.image_index]    
     
+    # get_keys
+    # Gets the keys pressed by the user and converts them into the players state, direction and velocity
     def get_keys(self):
         self.vel = (0, 0)
         keys =pygame.key.get_pressed()
@@ -101,6 +110,8 @@ class Player(pygame.sprite.Sprite):
             self.state = "walk"
             self.direction = 'D'  
     
+    # update
+    # Updates the player: moves the player
     def update(self): 
         previous_direction = self.direction
         previous_state = self.state
@@ -130,9 +141,13 @@ class Player(pygame.sprite.Sprite):
             self.image_list = self.animation_list["walk"][self.direction]                   
             self.image = self.animation()            
         
-
+# Resources (Super Class)
+# Different Map resources (Ex: Bushes)
 class Resource(pygame.sprite.Sprite):
     
+    # __init__
+    # Creates a resource object
+    # Parameters: Game object, x position for the Resource and y position for the Resource
     def __init__(self, game, x, y):
         self.game = game
         self.image = pygame.Surface((TILE_SIZE, TILE_SIZE))
@@ -143,17 +158,25 @@ class Resource(pygame.sprite.Sprite):
         self.rect.x = x * TILE_SIZE
         self.rect.y = y * TILE_SIZE
 
+# Bush (Sub Class)
 class Bush(Resource):
     
+    # __init__
+    # Create a bush using the Resource Super Class
+      # Parameters: Game object, x position for the Bush and y position for the Bush
     def __init__(self, game, x, y):
         Resource.__init__(self, game, x, y)
         self.groups = game.all_sprites, game.resources
         pygame.sprite.Sprite.__init__(self, self.groups)        
         self.image = BushImg
 
-
+# Item (Super Class)
+# Different items for the player to collect (Ex: Rupee)
 class Item(pygame.sprite.Sprite):
     
+    # __init__
+    # Create a Item object
+      # Parameters: Game object, x position for the Item and y position for the Item
     def __init__(self, game, x, y):
         self.game = game
         self.image = pygame.Surface((TILE_SIZE, TILE_SIZE))
@@ -163,17 +186,27 @@ class Item(pygame.sprite.Sprite):
         self.y = y
         self.rect.x = x * TILE_SIZE
         self.rect.y = y * TILE_SIZE
-        
+      
+# Rupee (Sub Class)
 class Rupee(Item):
     
+    # __init__
+    # Create a Rupee object using the Item Super Class
+    # Parameters: Game object, x position for the Rupee and y position for the Rupee
     def __init__(self, game, x, y):
         Item.__init__(self, game, x, y)
         self.image = RupeeImg
         self.groups = game.all_sprites, game.items
         pygame.sprite.Sprite.__init__(self, self.groups)
 
+# Map 
+# The map for the player
 class Map:
     
+    # __init__
+    # Initializes the map
+    # Gets the map details from the map.txt file
+    # Parameters: The filename for the map
     def __init__(self, filename):
         self.data = []
         game_folder = path.dirname(__file__)
@@ -182,8 +215,11 @@ class Map:
             for line in file:
                 self.data.append(line)
 
+# Game
 class Game:
-
+    
+    # __init__
+    # Crete a Game object
     def __init__(self):
         pygame.init()
         self.screen = pygame.display.set_mode((WIDTH,HEIGHT))
@@ -192,6 +228,8 @@ class Game:
         self.running = True
         self.font_name = pygame.font.match_font(FONT_NAME)
 
+    # new
+    # Sets up sprite groups and map at the start of a game
     def new(self):
         self.all_sprites = pygame.sprite.Group()
         self.player = Player(self)
@@ -206,13 +244,17 @@ class Game:
         self.draw_scenery()
         self.draw_enemy()
         self.run()
-        
+    
+    # draw_grid
+    # Draws lines on the grid in the TILE_SIZE size
     def draw_grid(self):
         for x in range(0, WIDTH, TILE_SIZE):
             pygame.draw.line(self.screen, LIGHT_GREY, (x, 0), (x, HEIGHT))
         for y in range(0, HEIGHT, TILE_SIZE):
             pygame.draw.line(self.screen, LIGHT_GREY, (0, y), (WIDTH, y))    
     
+    # draw_scenery
+    # Places the bushes and rupees on the map
     def draw_scenery(self):
         for r in range (0, HEIGHT//TILE_SIZE):
             for c in range (0, WIDTH//TILE_SIZE):
@@ -221,10 +263,13 @@ class Game:
                 if (self.map.data[c][r] == 'R'):
                     Rupee(self, r, c)
     
+    # draw_enemies
+    # Places the enemies on the map
     def draw_enemy(self):
         OrangeOcto(self, 25, 25)
         
-
+    # run
+    # run the game
     def run(self):
         self.playing = True
         self.timer = pygame.time.get_ticks()
@@ -236,9 +281,13 @@ class Game:
             self.update()
             self.draw()
 
+    # update
+    # Update all of the sprites
     def update(self):
         self.all_sprites.update()
 
+    # events
+    # Check what events occured in the game
     def events(self):
         #Game loop - Events
         for event in pygame.event.get():
@@ -247,6 +296,8 @@ class Game:
                 self.playing = False
                 self.running = False                
 
+    # draw
+    # Draw eveything to the GUI
     def draw(self):
             # Game Loop - Draw
             self.screen.fill(GROUND)
