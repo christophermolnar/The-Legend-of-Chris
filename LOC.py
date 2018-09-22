@@ -2,6 +2,7 @@ import pygame
 import random
 import math
 import sys
+import time
 from os import path
 from GameSetting import *
 from Enemies import *
@@ -34,6 +35,7 @@ class Player(pygame.sprite.Sprite):
         self.game = game
         self.direction = 'U'
         self.state = 'walk' 
+        self.alive = True
         self.animation_list = self.create_animation_dict()
         self.image_list = self.animation_list[self.state][self.direction]
         self.image_index = 0
@@ -44,6 +46,7 @@ class Player(pygame.sprite.Sprite):
         self.pos = pygame.math.Vector2(15 * TILE_SIZE, 15 * TILE_SIZE)
         self.vel = pygame.math.Vector2(0, 0)
         #self.acc = pygame.math.Vector2(0, 0)
+    
     
     # create_animation_dict
     # Creates a dictionary with the players sprites
@@ -126,11 +129,19 @@ class Player(pygame.sprite.Sprite):
             if pygame.sprite.spritecollideany(self, self.game.resources):
                 self.pos.x -= self.vel[0] * self.game.dt
                 self.pos.y -= self.vel[1] * self.game.dt
-                self.rect.topleft = (self.pos.x, self.pos.y)  
-            if pygame.sprite.spritecollideany(self, self.game.enemies):
-                if (self.state == "attack"):
-                    defeat_monster =  pygame.sprite.spritecollide(self, self.game.enemies, True) # Collect Rupee
-                #else: #Monster Attacks you
+                self.rect.topleft = (self.pos.x, self.pos.y)         
+            
+            collide = pygame.sprite.spritecollideany(self, self.game.enemies)
+            
+            if (collide != None):
+                if (self.state == "attack"): # Defeat the enemy
+                    collide.kill()
+                    #defeat_monster =  pygame.sprite.spritecollide(self, self.game.enemies, True) # Collect Rupee
+                else: # Enemy Attacks you
+                    self.alive = False
+                    self.kill()
+                    self.game.player.kill()                
+                    return
                     #Player takes a damage
                     #Check health
                     #Lose points            
@@ -139,8 +150,8 @@ class Player(pygame.sprite.Sprite):
                 pass
         elif (previous_state == "attack"): # After attacking switch back to a standard image
             self.image_list = self.animation_list["walk"][self.direction]                   
-            self.image = self.animation()            
-        
+            self.image = self.animation()          
+
 # Resources (Super Class)
 # Different Map resources (Ex: Bushes)
 class Resource(pygame.sprite.Sprite):
@@ -244,7 +255,25 @@ class Game:
         self.draw_scenery()
         self.draw_enemy()
         self.run()
-    
+        
+    # draw_text
+    # Draw a specified message with a certain colout, size and x/y position
+    def draw_text(self, message, size, colour, xPosition, yPosition):
+        font = pygame.font.SysFont(FONT_NAME, size)
+        text_surface = font.render(message, True, colour)
+        self.screen.blit(text_surface, (xPosition, yPosition))
+        
+        # TODO
+        # Add centering, left or right justifying the text
+
+    # end_game
+    # Bring up the Game Over screen
+    def endGame(self):
+        self.screen.fill(BLACK)
+        self.draw_text("GAME OVER", 22, RED, WIDTH/2, HEIGHT/2)
+        pygame.display.flip()
+        time.sleep(2)
+        
     # draw_grid
     # Draws lines on the grid in the TILE_SIZE size
     def draw_grid(self):
@@ -294,7 +323,10 @@ class Game:
             # Check for closing the window
             if (event.type == pygame.QUIT):
                 self.playing = False
-                self.running = False                
+                self.running = False   
+            if (not self.player.alive):
+                self.playing = False
+                self.running = False                   
 
     # draw
     # Draw eveything to the GUI
@@ -306,8 +338,10 @@ class Game:
             # *After drawing everything, flip the display
             pygame.display.flip()
 
+pygame.init()
 game = Game()
 while(game.running):
     game.new()
+    game.endGame()
 
 pygame.quit
