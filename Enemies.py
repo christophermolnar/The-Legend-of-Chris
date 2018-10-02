@@ -31,17 +31,20 @@ class Enemies(pygame.sprite.Sprite):
         self.attacking_distance = 5 * TILE_SIZE
         self.speed = 10
      
+     
     def move_x(self, destination):
         if (self.pos.x - destination.x > 0):
             self.pos.x -= self.speed * self.game.dt
         else:
             self.pos.x += self.speed * self.game.dt         
+    
       
     def move_y(self, destination):  
         if (self.pos.y - destination.y > 0):
             self.pos.y -= self.speed * self.game.dt
         else:
             self.pos.y += self.speed * self.game.dt           
+     
         
     def calculate_move(self, destination):
 
@@ -88,6 +91,7 @@ class Enemies(pygame.sprite.Sprite):
             #print("original position = " + str(self.start_pos))
             #self.calculate_move(self.start_pos)
         ##Retreat
+        
         
 # OrangeOcto (Sub Class)
 class OrangeOcto(Enemies):
