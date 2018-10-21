@@ -5,6 +5,7 @@ TITLE = "LOC"
 FPS = 60
 FONT_NAME = "arial"
 TILE_SIZE = 16
+SCORE_BOARD_TILES = 4
 
 # Define Colours
 WHITE = (255, 255, 255)

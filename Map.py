@@ -25,6 +25,7 @@ class Map:
         
         self.draw_scenery()
         self.draw_enemy()  
+        self.draw_scoreboard()
         
                 
     # draw_text
@@ -42,22 +43,29 @@ class Map:
     # Draws lines on the grid in the TILE_SIZE size
     def draw_grid(self):
         for x in range(0, WIDTH, TILE_SIZE):
-            pygame.draw.line(self.game.screen, LIGHT_GREY, (x, 0), (x, HEIGHT))
-        for y in range(0, HEIGHT, TILE_SIZE):
+            pygame.draw.line(self.game.screen, LIGHT_GREY, (x, SCORE_BOARD_TILES*TILE_SIZE), (x, HEIGHT))
+        for y in range(SCORE_BOARD_TILES*TILE_SIZE, HEIGHT, TILE_SIZE):
             pygame.draw.line(self.game.screen, LIGHT_GREY, (0, y), (WIDTH, y))
 
 
     # draw_scenery
     # Places the bushes and rupees on the map
     def draw_scenery(self):
-        for r in range (0, HEIGHT//TILE_SIZE):
-            for c in range (0, WIDTH//TILE_SIZE):
-                if (self.data[c][r] == 'B'):
-                    Bush(self.game, r, c)
-                if (self.data[c][r] == 'R'):
-                    Rupee(self.game, r, c)
+        for r in range (0, (HEIGHT//TILE_SIZE  - SCORE_BOARD_TILES)): # Y-coordinate of the map
+            for c in range (0, WIDTH//TILE_SIZE): # X-coordinate of the map
+                if (self.data[r][c] == 'B'):
+                    Bush(self.game, c, r + SCORE_BOARD_TILES)
+                if (self.data[r][c] == 'R'):
+                    Rupee(self.game, c, r + SCORE_BOARD_TILES)
+                    
+    
+    # draw_scoreboard
+    # Draws the scoreboard
+    def draw_scoreboard(self):
+        pygame.draw.rect(self.game.screen, PURPLE, (0, 0, WIDTH, SCORE_BOARD_TILES*TILE_SIZE))
+        # MAKE A SCOREBOARD OBJECT STORE SCORE, TIME AND LIVES
 
-
+        
     # draw_enemies
     # Places the enemies on the map
     def draw_enemy(self):

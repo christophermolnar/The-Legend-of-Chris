@@ -29,6 +29,8 @@ class Player(pygame.sprite.Sprite):
         self.direction = 'U'
         self.state = 'walk'
         self.alive = True
+        self.lives = 3
+        self.invincibleTime = 0
         self.animation_list = self.create_animation_dict()
         self.image_list = self.animation_list[self.state][self.direction]
         self.image_index = 0
@@ -107,6 +109,10 @@ class Player(pygame.sprite.Sprite):
             self.vel = (0, PLAYER_SPEED)
             self.state = "walk"
             self.direction = 'D'
+        
+        if (self.isPlayerInvincible()):
+            # *TO DO: Add a different Colour sprite for invincibility
+            pass
 
 
     # update
@@ -132,18 +138,25 @@ class Player(pygame.sprite.Sprite):
             if (collide != None):
                 if (self.state == "attack"): # Defeat the enemy
                     collide.kill()
+                    self.game.points += 20
                     #defeat_monster =  pygame.sprite.spritecollide(self, self.game.enemies, True) # Collect Rupee
                 else: # Enemy Attacks you
-                    self.alive = False
-                    self.kill()
-                    self.game.player.kill()
-                    return
-                    #Player takes a damage
-                    #Check health
-                    #Lose points
+                    if (self.isPlayerInvincible()):
+                        self.lives -= 1
+                        if (self.lives <= 0):
+                            self.alive = False
+                            self.kill()
+                            self.game.player.kill()
+                            return
+                        self.invincibleTime = self.game.currentTime + 5
+                        
             collects_rupee =  pygame.sprite.spritecollide(self, self.game.items, True) # Collect Rupee
             if (collects_rupee):
-                pass
+                self.game.points += 10
         elif (previous_state == "attack"): # After attacking switch back to a standard image
             self.image_list = self.animation_list["walk"][self.direction]
             self.image = self.animation()
+            
+    
+    def isPlayerInvincible(self) -> bool:
+        return (self.game.currentTime > self.invincibleTime)

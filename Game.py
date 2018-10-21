@@ -10,6 +10,7 @@ from Obstacle import *
 from Item import *
 from Map import *
 from Player import *
+from Scoreboard import *
 #vec = pygame.math.Vector2
 
 # Game
@@ -22,8 +23,12 @@ class Game:
         self.screen = pygame.display.set_mode((WIDTH,HEIGHT))
         pygame.display.set_caption(TITLE)
         self.clock = pygame.time.Clock()
+        self.startTime = time.time()
+        self.currentTime = time.time()
+        self.gameTime = 0
         self.running = True
         self.font_name = pygame.font.match_font(FONT_NAME)
+        self.points = 0
 
 
     # new
@@ -36,6 +41,7 @@ class Game:
         self.obstacles = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()        
         self.map = Map(map_directory + "Map1.txt", self)
+        self.scoreboard = Scoreboard(self)
 
         self.run()
 
@@ -67,7 +73,9 @@ class Game:
     # Update all of the sprites
     def update(self):
         self.all_sprites.update()
-
+        self.scoreboard.update(0, 0)
+        self.currentTime = time.time() 
+        self.gameTime = int((self.currentTime - self.startTime))  
 
     # events
     # Check what events occured in the game
@@ -90,6 +98,8 @@ class Game:
             self.screen.fill(GROUND)
             self.map.draw_grid()
             self.all_sprites.draw(self.screen)
+            self.scoreboard.draw(self.gameTime, self.points, self.player.lives)
+            
             # *After drawing everything, flip the display
             pygame.display.flip()
 
