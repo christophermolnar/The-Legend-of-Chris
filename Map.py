@@ -25,7 +25,7 @@ class Map:
         
         self.draw_scenery()
         self.draw_enemy()  
-        self.draw_scoreboard()
+       # self.draw_scoreboard()
         
                 
     # draw_text
@@ -56,7 +56,7 @@ class Map:
                 if (self.data[r][c] == 'B'):
                     Bush(self.game, c, r + SCORE_BOARD_TILES)
                 if (self.data[r][c] == 'R'):
-                    Rupee(self.game, c, r + SCORE_BOARD_TILES)
+                    Rupee(self.game, c, r + SCORE_BOARD_TILES)  
                     
     
     # draw_scoreboard

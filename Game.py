@@ -72,10 +72,11 @@ class Game:
     # update
     # Update all of the sprites
     def update(self):
-        self.all_sprites.update()
-        self.scoreboard.update(0, 0)
         self.currentTime = time.time() 
-        self.gameTime = int((self.currentTime - self.startTime))  
+        self.gameTime = int((self.currentTime - self.startTime))          
+        self.scoreboard.update(0, 0)
+        self.all_sprites.update()
+
 
     # events
     # Check what events occured in the game
@@ -97,8 +98,8 @@ class Game:
             # Game Loop - Draw
             self.screen.fill(GROUND)
             self.map.draw_grid()
-            self.all_sprites.draw(self.screen)
             self.scoreboard.draw(self.gameTime, self.points, self.player.lives)
+            self.all_sprites.draw(self.screen)
             
             # *After drawing everything, flip the display
             pygame.display.flip()

@@ -141,7 +141,7 @@ class Player(pygame.sprite.Sprite):
                     self.game.points += 20
                     #defeat_monster =  pygame.sprite.spritecollide(self, self.game.enemies, True) # Collect Rupee
                 else: # Enemy Attacks you
-                    if (self.isPlayerInvincible()):
+                    if (not self.isPlayerInvincible()):
                         self.lives -= 1
                         if (self.lives <= 0):
                             self.alive = False
@@ -159,4 +159,4 @@ class Player(pygame.sprite.Sprite):
             
     
     def isPlayerInvincible(self) -> bool:
-        return (self.game.currentTime > self.invincibleTime)
+        return (self.game.currentTime <= self.invincibleTime)

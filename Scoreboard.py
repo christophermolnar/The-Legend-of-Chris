@@ -1,6 +1,12 @@
 import pygame
+import sys
 from os import path
 from GameSetting import *
+
+# heart Images
+heartImg = pygame.image.load(pictures_path + "heart.png")
+heartInvincibleImg = pygame.image.load(pictures_path + "heart_invincible.png")
+
 
 # Scoreboard
 # The scoreboard at the top of the screen
@@ -18,7 +24,7 @@ class Scoreboard():
         self.ty = ty
         self.bx = bx
         self.by = by 
-        self.font = font = pygame.font.SysFont(FONT_NAME, 25)
+        self.font = font = pygame.font.SysFont(FONT_NAME, 25)          
         
         
     def update(self, points, lives):
@@ -38,8 +44,14 @@ class Scoreboard():
         text_surface = self.font.render("POINTS: " + str(currentPointTotal), True, WHITE)
         self.game.screen.blit(text_surface, (12 * TILE_SIZE, TILE_SIZE))                
         # Life
-        text_surface = self.font.render("LIFE: " + str(numberOfLivesLeft), True, WHITE)
-        self.game.screen.blit(text_surface, (23 * TILE_SIZE, TILE_SIZE))                             
+        text_surface = self.font.render("LIFE: ", True, WHITE)
+        self.game.screen.blit(text_surface, (23 * TILE_SIZE, TILE_SIZE))  
+        heartPicture = heartImg
+        if (self.game.player.isPlayerInvincible()):
+            heartPicture = heartInvincibleImg
+        for hearts in range(0, numberOfLivesLeft):
+            self.game.screen.blit(heartPicture, ((27 + hearts) * TILE_SIZE, 1.5 * TILE_SIZE)) 
+            
         
 
 
