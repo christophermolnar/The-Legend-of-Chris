@@ -38,7 +38,7 @@ class Scoreboard():
         pygame.draw.rect(self.game.screen, BLACK, (self.tx, self.ty, self.bx, self.by))
         #scoreboardTextSpace = (WIDTH/TILE_SIZE -2) == 33 (Have items at 1, 12, 23)
         # Score
-        text_surface = self.font.render("SCORE: " + str(currentTime), True, WHITE)
+        text_surface = self.font.render("TIME: " + str(currentTime), True, WHITE)
         self.game.screen.blit(text_surface, (TILE_SIZE, TILE_SIZE)) 
         # Points
         text_surface = self.font.render("POINTS: " + str(currentPointTotal), True, WHITE)

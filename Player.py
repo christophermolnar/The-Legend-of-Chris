@@ -2,6 +2,7 @@ import pygame
 from os import path
 from GameSetting import *
 from Enemies import *
+from Item import *
 
 #Moving Pictures
 ChrisF1Img= pygame.image.load(pictures_path + "chris forward 1.png")
@@ -13,10 +14,16 @@ ChrisL2Img= pygame.image.load(pictures_path + "chris left 2.png")
 ChrisR1Img= pygame.image.load(pictures_path + "chris right 1.png")
 ChrisR2Img= pygame.image.load(pictures_path + "chris right 2.png")
 #Attack Pictures
-ChrisAFImg= pygame.image.load(pictures_path + "chris attack forward.png")
-ChrisABImg= pygame.image.load(pictures_path + "chris attack back.png")
-ChrisALImg= pygame.image.load(pictures_path + "chris attack left.png")
-ChrisARImg= pygame.image.load(pictures_path + "chris attack right.png")
+ChrisAFImg= pygame.image.load(pictures_path + "chrisAttackDown.png")
+ChrisABImg= pygame.image.load(pictures_path + "chrisAttackUp.png")
+ChrisALImg= pygame.image.load(pictures_path + "chrisAttackLeft.png")
+ChrisARImg= pygame.image.load(pictures_path + "chrisAttackRight.png")
+
+
+#ChrisAFImg= pygame.image.load(pictures_path + "chris attack forward.png")
+#ChrisABImg= pygame.image.load(pictures_path + "chris attack back.png")
+#ChrisALImg= pygame.image.load(pictures_path + "chris attack left.png")
+#ChrisARImg= pygame.image.load(pictures_path + "chris attack right.png")
 
 
 # Player
@@ -90,8 +97,9 @@ class Player(pygame.sprite.Sprite):
     def get_keys(self):
         self.vel = (0, 0)
         keys =pygame.key.get_pressed()
-        self.state = "rest"
         if (keys[pygame.K_SPACE]):
+            if (self.state != "attack"): # Only create 1 sword at a time
+                Sword(self.game, self.pos.x, self.pos.y, self.direction)
             self.state = "attack"
         elif (keys[pygame.K_LEFT] or keys[pygame.K_a]):
             self.vel = (-PLAYER_SPEED, 0)
@@ -109,6 +117,8 @@ class Player(pygame.sprite.Sprite):
             self.vel = (0, PLAYER_SPEED)
             self.state = "walk"
             self.direction = 'D'
+        else:
+             self.state = "rest"
         
         if (self.isPlayerInvincible()):
             # *TO DO: Add a different Colour sprite for invincibility
@@ -136,23 +146,18 @@ class Player(pygame.sprite.Sprite):
             collide = pygame.sprite.spritecollideany(self, self.game.enemies)
 
             if (collide != None):
-                if (self.state == "attack"): # Defeat the enemy
-                    collide.kill()
-                    self.game.points += 20
-                    #defeat_monster =  pygame.sprite.spritecollide(self, self.game.enemies, True) # Collect Rupee
-                else: # Enemy Attacks you
-                    if (not self.isPlayerInvincible()):
-                        self.lives -= 1
-                        if (self.lives <= 0):
-                            self.alive = False
-                            self.kill()
-                            self.game.player.kill()
-                            return
-                        self.invincibleTime = self.game.currentTime + 5
-                        
-            collects_rupee =  pygame.sprite.spritecollide(self, self.game.items, True) # Collect Rupee
-            if (collects_rupee):
+                if (not self.isPlayerInvincible()):
+                    self.lives -= 1
+                    if (self.lives <= 0):
+                        self.alive = False
+                        self.kill()
+                        self.game.player.kill()
+                        return
+                    self.invincibleTime = self.game.currentTime + 5
+
+            if (pygame.sprite.spritecollide(self, self.game.items, True)): # Collect Rupee when you collide with it
                 self.game.points += 10
+                
         elif (previous_state == "attack"): # After attacking switch back to a standard image
             self.image_list = self.animation_list["walk"][self.direction]
             self.image = self.animation()

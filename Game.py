@@ -38,6 +38,7 @@ class Game:
         self.player = Player(self)
         self.all_sprites.add(self.player)
         self.items = pygame.sprite.Group()
+        self.playerItems = pygame.sprite.Group()
         self.obstacles = pygame.sprite.Group()
         self.enemies = pygame.sprite.Group()        
         self.map = Map(map_directory + "Map1.txt", self)
