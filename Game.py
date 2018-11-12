@@ -27,7 +27,7 @@ class Game:
         self.currentTime = time.time()
         self.gameTime = 0
         self.running = True
-        self.font_name = pygame.font.match_font(FONT_NAME)
+        self.fontName = pygame.font.match_font(FONT_NAME)
         self.points = 0
 
 
@@ -40,7 +40,7 @@ class Game:
         self.items = pygame.sprite.Group()
         self.playerItems = pygame.sprite.Group()
         self.obstacles = pygame.sprite.Group()
-        self.enemies = pygame.sprite.Group()        
+        self.enemies = pygame.sprite.Group()
         self.map = Map(map_directory + "Map1.txt", self)
         self.scoreboard = Scoreboard(self)
 
@@ -73,8 +73,8 @@ class Game:
     # update
     # Update all of the sprites
     def update(self):
-        self.currentTime = time.time() 
-        self.gameTime = int((self.currentTime - self.startTime))          
+        self.currentTime = time.time()
+        self.gameTime = int((self.currentTime - self.startTime))
         self.scoreboard.update(0, 0)
         self.all_sprites.update()
 
@@ -101,7 +101,7 @@ class Game:
             self.map.draw_grid()
             self.scoreboard.draw(self.gameTime, self.points, self.player.lives)
             self.all_sprites.draw(self.screen)
-            
+
             # *After drawing everything, flip the display
             pygame.display.flip()
 

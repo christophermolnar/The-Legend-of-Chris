@@ -28,7 +28,10 @@ BROWN = (139, 69, 19)
 PLAYER_SPEED = 100
 
 #Pictures
-pictures_path = "Pictures/"
+PICTURE_PATH = "Pictures/"
 
 #Maps
 map_directory = "\\Maps\\"
+
+# Points
+RUPEE_VALUE = 10

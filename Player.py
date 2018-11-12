@@ -5,26 +5,24 @@ from Enemies import *
 from Item import *
 
 #Moving Pictures
-ChrisF1Img= pygame.image.load(pictures_path + "chris forward 1.png")
-ChrisF2Img= pygame.image.load(pictures_path + "chris forward 2.png")
-ChrisB1Img= pygame.image.load(pictures_path + "chris backwards 1.png")
-ChrisB2Img= pygame.image.load(pictures_path + "chris backwards 2.png")
-ChrisL1Img= pygame.image.load(pictures_path + "chris left 1.png")
-ChrisL2Img= pygame.image.load(pictures_path + "chris left 2.png")
-ChrisR1Img= pygame.image.load(pictures_path + "chris right 1.png")
-ChrisR2Img= pygame.image.load(pictures_path + "chris right 2.png")
+PLAYER_UP_1_IMG = pygame.image.load(PICTURE_PATH + "chrisUp1.png")
+PLAYER_UP_2_IMG = pygame.image.load(PICTURE_PATH + "chrisUp2.png")
+PLAYER_DOWN_1_IMG= pygame.image.load(PICTURE_PATH + "chrisDown1.png")
+PLAYER_DOWN_2_IMG = pygame.image.load(PICTURE_PATH + "chrisDown2.png")
+PLAYER_LEFT_1_IMG = pygame.image.load(PICTURE_PATH + "chrisLeft1.png")
+PLAYER_LEFT_2_IMG = pygame.image.load(PICTURE_PATH + "chrisLeft2.png")
+PLAYER_RIGHT_1_IMG = pygame.image.load(PICTURE_PATH + "chrisRight1.png")
+PLAYER_RIGHT_2_IMG = pygame.image.load(PICTURE_PATH + "chrisRight2.png")
 #Attack Pictures
-ChrisAFImg= pygame.image.load(pictures_path + "chrisAttackDown.png")
-ChrisABImg= pygame.image.load(pictures_path + "chrisAttackUp.png")
-ChrisALImg= pygame.image.load(pictures_path + "chrisAttackLeft.png")
-ChrisARImg= pygame.image.load(pictures_path + "chrisAttackRight.png")
+PLAYER_ATTACK_UP_IMG = pygame.image.load(PICTURE_PATH + "chrisAttackUp.png")
+PLAYER_ATTACK_DOWN_IMG = pygame.image.load(PICTURE_PATH + "chrisAttackDown.png")
+PLAYER_ATTACK_LEFT_IMG = pygame.image.load(PICTURE_PATH + "chrisAttackLeft.png")
+PLAYER_ATTACK_RIGHT_IMG = pygame.image.load(PICTURE_PATH + "chrisAttackRight.png")
 
-
-#ChrisAFImg= pygame.image.load(pictures_path + "chris attack forward.png")
-#ChrisABImg= pygame.image.load(pictures_path + "chris attack back.png")
-#ChrisALImg= pygame.image.load(pictures_path + "chris attack left.png")
-#ChrisARImg= pygame.image.load(pictures_path + "chris attack right.png")
-
+# A Dicionary for the player sprites. This is a Dictionay of actions with a Dictionary of directions with a list of sprites
+# The Dictionaries keys are walk, and attack: the corresponding values are dictionaries with a list of sprites inside
+PLAYER_ANIMATION_DICTIONARY = {'walk': {'U': [PLAYER_UP_1_IMG, PLAYER_UP_2_IMG], 'D': [PLAYER_DOWN_1_IMG, PLAYER_DOWN_2_IMG], 'L': [PLAYER_LEFT_1_IMG, PLAYER_LEFT_2_IMG], 'R': [PLAYER_RIGHT_1_IMG, PLAYER_RIGHT_2_IMG]},
+                    'attack': {'U': [PLAYER_ATTACK_UP_IMG], 'D': [PLAYER_ATTACK_DOWN_IMG], 'L': [PLAYER_ATTACK_LEFT_IMG], 'R': [PLAYER_ATTACK_RIGHT_IMG]}}
 
 # Player
 # The player controlled by the user
@@ -38,7 +36,7 @@ class Player(pygame.sprite.Sprite):
         self.alive = True
         self.lives = 3
         self.invincibleTime = 0
-        self.animation_list = self.create_animation_dict()
+        self.animation_list = PLAYER_ANIMATION_DICTIONARY
         self.image_list = self.animation_list[self.state][self.direction]
         self.image_index = 0
         self.image = self.image_list[self.image_index]
@@ -48,36 +46,6 @@ class Player(pygame.sprite.Sprite):
         self.pos = pygame.math.Vector2(15 * TILE_SIZE, 15 * TILE_SIZE)
         self.vel = pygame.math.Vector2(0, 0)
         #self.acc = pygame.math.Vector2(0, 0)
-
-
-    # create_animation_dict
-    # Creates a dictionary with the players sprites
-    # The Dictionaries keys are walk, and attack: the corresponding values are dictionaries with a list of sprites inside
-    # Returns: A dictionary with the player sprites
-    def create_animation_dict(self):
-
-        # ***Will Resize Later***
-        size = (32,32)
-        # *** ***
-
-        walkU1 = ChrisB1Img
-        walkU2 = ChrisB2Img
-        walkD1 = ChrisF1Img
-        walkD2 = ChrisF2Img
-        walkL1 = ChrisL1Img
-        walkL2 = ChrisL2Img
-        walkR1 = ChrisR1Img
-        walkR2 = ChrisR2Img
-        attackU = ChrisABImg
-        attackD = ChrisAFImg
-        attackL = ChrisALImg
-        attackR = ChrisARImg
-
-        # Animation Dictionary Dictionary (A Dictionay of actions with a Dictionary of directions to give the proper animation list)
-        animation_dict = {'walk': {'U': [walkU1, walkU2], 'D': [walkD1, walkD2], 'L': [walkL1, walkL2], 'R': [walkR1, walkR2]},
-                      'attack': {'U': [attackU], 'D': [attackD], 'L': [attackL], 'R': [attackR]}}
-
-        return animation_dict
 
 
     # animation
@@ -119,7 +87,7 @@ class Player(pygame.sprite.Sprite):
             self.direction = 'D'
         else:
              self.state = "rest"
-        
+
         if (self.isPlayerInvincible()):
             # *TO DO: Add a different Colour sprite for invincibility
             pass
@@ -128,14 +96,14 @@ class Player(pygame.sprite.Sprite):
     # update
     # Updates the player: moves the player
     def update(self):
-        previous_direction = self.direction
-        previous_state = self.state
+        previousDirection = self.direction
+        previousState = self.state
         self.get_keys()
         if (self.state != 'rest'): #if the player moved
             self.pos.x += self.vel[0] * self.game.dt
             self.pos.y += self.vel[1] * self.game.dt
             self.rect.topleft = (self.pos.x, self.pos.y)
-            if ((self.game.counter % 10 == 0) or (previous_direction != self.direction) or (self.state != previous_state)): # alternate every 10 frames or if the direction or state changes
+            if ((self.game.counter % 10 == 0) or (previousDirection != self.direction) or (self.state != previousState)): # alternate every 10 frames or if the direction or state changes
                 self.image_list = self.animation_list[self.state][self.direction]
                 self.image = self.animation()
             if pygame.sprite.spritecollideany(self, self.game.obstacles):
@@ -156,12 +124,12 @@ class Player(pygame.sprite.Sprite):
                     self.invincibleTime = self.game.currentTime + 5
 
             if (pygame.sprite.spritecollide(self, self.game.items, True)): # Collect Rupee when you collide with it
-                self.game.points += 10
-                
-        elif (previous_state == "attack"): # After attacking switch back to a standard image
+                self.game.points += RUPEE_VALUE
+
+        elif (previousState == "attack"): # After attacking switch back to a standard image
             self.image_list = self.animation_list["walk"][self.direction]
             self.image = self.animation()
-            
-    
+
+
     def isPlayerInvincible(self) -> bool:
         return (self.game.currentTime <= self.invincibleTime)

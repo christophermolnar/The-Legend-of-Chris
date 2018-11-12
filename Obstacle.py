@@ -3,7 +3,7 @@ from os import path
 from GameSetting import *
 
 # Obstacle Images
-BushImg = pygame.image.load(pictures_path + "bush.png")
+BUSH_IMG = pygame.image.load(PICTURE_PATH + "bush.png")
 
 # Resources (Super Class)
 # Different Map resources (Ex: Bushes)
@@ -23,6 +23,7 @@ class Obstacle(pygame.sprite.Sprite):
         self.rect.y = y * TILE_SIZE
 
 # Bush (Sub Class)
+# A bush
 class Bush(Obstacle):
 
     # __init__
@@ -32,4 +33,4 @@ class Bush(Obstacle):
         Obstacle.__init__(self, game, x, y)
         self.groups = game.all_sprites, game.obstacles
         pygame.sprite.Sprite.__init__(self, self.groups)
-        self.image = BushImg
+        self.image = BUSH_IMG
