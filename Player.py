@@ -45,7 +45,6 @@ class Player(pygame.sprite.Sprite):
         self.timer = 0.0
         self.pos = pygame.math.Vector2(15 * TILE_SIZE, 15 * TILE_SIZE)
         self.vel = pygame.math.Vector2(0, 0)
-        #self.acc = pygame.math.Vector2(0, 0)
 
 
     # animation
@@ -86,7 +85,7 @@ class Player(pygame.sprite.Sprite):
             self.state = "walk"
             self.direction = 'D'
         else:
-             self.state = "rest"
+            self.state = "rest" 
 
         if (self.isPlayerInvincible()):
             # *TO DO: Add a different Colour sprite for invincibility
@@ -106,10 +105,11 @@ class Player(pygame.sprite.Sprite):
                     self.kill()
                     self.game.player.kill()
                     return
-                self.invincibleTime = self.game.currentTime + 5  
+                self.invincibleTime = self.game.currentTime + PLAYER_INVINCIBILITY_SECONDS  
                 
         if (pygame.sprite.spritecollide(self, self.game.items, True)): # Collect Rupee when you collide with it
             self.game.points += RUPEE_VALUE        
+
 
     # update
     # Updates the player: moves the player
@@ -134,5 +134,8 @@ class Player(pygame.sprite.Sprite):
             self.image_list = self.animation_list["walk"][self.direction]
             self.image = self.animation()    
 
+    # isPlayerInvincible
+    # Check to see if the player is invincinle
+    # The player is invincible for 5 seconds after getting hit
     def isPlayerInvincible(self) -> bool:
         return (self.game.currentTime <= self.invincibleTime)

@@ -2,7 +2,8 @@ import pygame
 import math
 from GameSetting import *
 
-#Moving Pictures
+# Moving Pictures
+# Octo Images
 OCTO_UP_1_IMG = pygame.image.load(PICTURE_PATH + "octoUp1.png")
 OCTO_UP_2_IMG = pygame.image.load(PICTURE_PATH + "octoUp2.png")
 OCTO_DOWN_1_IMG= pygame.image.load(PICTURE_PATH + "octoDown1.png")
@@ -11,9 +12,21 @@ OCTO_LEFT_1_IMG = pygame.image.load(PICTURE_PATH + "octoLeft1.png")
 OCTO_LEFT_2_IMG = pygame.image.load(PICTURE_PATH + "octoLeft2.png")
 OCTO_RIGHT_1_IMG = pygame.image.load(PICTURE_PATH + "octoRight1.png")
 OCTO_RIGHT_2_IMG = pygame.image.load(PICTURE_PATH + "octoRight2.png")
+# Dog Images
+#Moving Pictures
+DOG_UP_1_IMG = pygame.image.load(PICTURE_PATH + "dogUp1.png")
+DOG_UP_2_IMG = pygame.image.load(PICTURE_PATH + "dogUp2.png")
+DOG_DOWN_1_IMG= pygame.image.load(PICTURE_PATH + "dogDown1.png")
+DOG_DOWN_2_IMG = pygame.image.load(PICTURE_PATH + "dogDown2.png")
+DOG_LEFT_1_IMG = pygame.image.load(PICTURE_PATH + "dogLeft1.png")
+DOG_LEFT_2_IMG = pygame.image.load(PICTURE_PATH + "dogLeft2.png")
+DOG_RIGHT_1_IMG = pygame.image.load(PICTURE_PATH + "dogRight1.png")
+DOG_RIGHT_2_IMG = pygame.image.load(PICTURE_PATH + "dogRight2.png")
 
 # A Dicionary for the octo sprites. This is a Dictionay of directions (key) and sprites (values)
 OCTO_ANIMATION_DICTIONARY = {'U': [OCTO_UP_1_IMG, OCTO_UP_2_IMG], 'D': [OCTO_DOWN_1_IMG, OCTO_DOWN_2_IMG], 'L': [OCTO_LEFT_1_IMG, OCTO_LEFT_2_IMG], 'R': [OCTO_RIGHT_1_IMG, OCTO_RIGHT_2_IMG]}
+# A Dicionary for the dog sprites. This is a Dictionay of directions (key) and sprites (values)
+DOG_ANIMATION_DICTIONARY = {'U': [DOG_UP_1_IMG, DOG_UP_2_IMG], 'D': [DOG_DOWN_1_IMG, DOG_DOWN_2_IMG], 'L': [DOG_LEFT_1_IMG, DOG_LEFT_2_IMG], 'R': [DOG_RIGHT_1_IMG, DOG_RIGHT_2_IMG]}
 
 
 # Enemies (Super Class)
@@ -30,12 +43,9 @@ class Enemies(pygame.sprite.Sprite):
         self.direction = direction
         self.changeDirectionFlag = False
         self.animationDictionary = enemyAnimationDictionary
-        #self.image_list = self.animation_list[self.state][self.direction]
         self.imageList = self.animationDictionary[self.direction]
         self.image_index = 0
         self.image = self.imageList[self.image_index]
-        #self.image = pygame.Surface((TILE_SIZE, TILE_SIZE))
-        #self.image.fill(PURPLE)
         self.rect = self.image.get_rect()
         self.rect.x = x * TILE_SIZE
         self.rect.y = y * TILE_SIZE
@@ -47,6 +57,8 @@ class Enemies(pygame.sprite.Sprite):
         self.speed = 10
 
 
+    # straightLineMove
+    # Moving the enemy in a horizontal or vertical direction
     def straightLineMove(self, xMovement, yMovement, speed):
 
         self.pos.x += self.vel[0] * self.game.dt
@@ -62,6 +74,9 @@ class Enemies(pygame.sprite.Sprite):
             self.vel[1] = - self.vel[1]
             self.changeDirectionFlag = True
 
+
+    # getDirections
+    # Get the direction that the enemy is moving in
     def getDirection(self):
         if (self.vel[0] > 0 ):
             return 'R'
@@ -71,10 +86,11 @@ class Enemies(pygame.sprite.Sprite):
             return 'U'
         elif (self.vel[1] > 0 ):
             return 'D'        
+     
         
     # animation
     # Alternates the sprites
-    # Returns: The players sprite to display
+    # Returns: The enemy sprite to display
     def animation(self):
         if self.image_index < (len(self.image_list) - 1):
             self.image_index += 1
@@ -116,12 +132,14 @@ class Enemies(pygame.sprite.Sprite):
         print("ENEMY x:" + str(self.pos.x))
         print("ENEMY y:" + str(self.pos.y))
 
-
+    
+    # update    
+    # Update the enemy 
     def update(self):
 
         self.straightLineMove(0, 0, 0)
         
-        if ((self.game.counter % 20 == 0) or self.changeDirectionFlag): # alternate every 10 frames or if the direction changes
+        if ((self.game.counter % 15 == 0) or self.changeDirectionFlag): # alternate every 10 frames or if the direction changes
             self.direction = self.getDirection()
             self.image_list = self.animationDictionary[self.direction]
             self.image = self.animation()    
@@ -156,15 +174,21 @@ class Enemies(pygame.sprite.Sprite):
 # OrangeOcto (Sub Class)
 class OrangeOcto(Enemies):
 
-    #const.ORANGE_OCTO_SPEED = 75
-
     # __init__
     # Creates a OrangeOcto with the Enemies Super Class
     # Parameters: game object, x position of the OrangeOcto and y position of the OrangeOcto
     def __init__(self, game, x, y, startingDirection, xSpeed, ySpeed):
         Enemies.__init__(self, game, x, y, OCTO_ANIMATION_DICTIONARY, startingDirection, xSpeed, ySpeed)
-        #self.image_list = OCTO_ANIMATION_DICTIONARY[self.direction]
-        #self.image = self.image_list[0]
-        self.speed = 75
+        self.groups = game.all_sprites, game.enemies
+        pygame.sprite.Sprite.__init__(self, self.groups)
+        
+# DogGuard (Sub Class)
+class DogGuard(Enemies):
+
+    # __init__
+    # Creates a dog guard with the Enemies Super Class
+    # Parameters: game object, x position of the dog guard and y position of the dog guard
+    def __init__(self, game, x, y, startingDirection, xSpeed, ySpeed):
+        Enemies.__init__(self, game, x, y, DOG_ANIMATION_DICTIONARY, startingDirection, xSpeed, ySpeed)
         self.groups = game.all_sprites, game.enemies
         pygame.sprite.Sprite.__init__(self, self.groups)

@@ -26,12 +26,14 @@ class Scoreboard():
         self.by = by
         self.font = pygame.font.SysFont(FONT_NAME, 25)
 
-
+    # update
+    # Update for the scoreboard
     def update(self, points, lives):
 
         pass
 
-
+    # draw
+    # Draw the scoreboard
     def draw(self, currentTime, currentPointTotal, numberOfLivesLeft):
 
         # Background

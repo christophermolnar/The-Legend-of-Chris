@@ -53,9 +53,13 @@ class Map:
             for c in range (0, WIDTH // TILE_SIZE): # X-coordinate of the map
                 if (self.data[r][c] == 'B'):
                     Bush(self.game, c, r + SCORE_BOARD_TILES)
-                if (self.data[r][c] == 'R'):
+                elif (self.data[r][c] == 'R'):
                     Rupee(self.game, c, r + SCORE_BOARD_TILES)
-                if (self.data[r][c] == 'O'):
-                    OrangeOcto(self.game, c, r + SCORE_BOARD_TILES, 'R', ENEMIES_SPEED, 0)
-                if (self.data[r][c] == 'o'):
-                    OrangeOcto(self.game, c, r + SCORE_BOARD_TILES, 'D', 0, ENEMIES_SPEED)                    
+                elif (self.data[r][c] == 'O'): # Big O for octo enemy moving left and right
+                    OrangeOcto(self.game, c, r + SCORE_BOARD_TILES, 'R', ENEMY_SPEED_2, 0)
+                elif (self.data[r][c] == 'o'): # little o for octo enemy moving up and down
+                    OrangeOcto(self.game, c, r + SCORE_BOARD_TILES, 'D', 0, ENEMY_SPEED_2)   
+                elif (self.data[r][c] == 'D'): # Big O for dog guard moving left and right
+                    DogGuard(self.game, c, r + SCORE_BOARD_TILES, 'R', ENEMY_SPEED_1, 0)
+                elif (self.data[r][c] == 'd'): # little o for dog guard moving up and down
+                    DogGuard(self.game, c, r + SCORE_BOARD_TILES, 'D', 0, ENEMY_SPEED_1)                  

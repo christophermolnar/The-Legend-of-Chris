@@ -11,7 +11,6 @@ from Item import *
 from Map import *
 from Player import *
 from Scoreboard import *
-#vec = pygame.math.Vector2
 
 # Game
 class Game:
