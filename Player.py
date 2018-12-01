@@ -92,6 +92,24 @@ class Player(pygame.sprite.Sprite):
             # *TO DO: Add a different Colour sprite for invincibility
             pass
 
+    # checkPlayerCollisions
+    # Check what the player is colliding with
+    def checkPlayerCollisions(self):
+    
+        enemyCollision = pygame.sprite.spritecollideany(self, self.game.enemies)
+
+        if (enemyCollision != None):
+            if (not self.isPlayerInvincible()):
+                self.lives -= 1
+                if (self.lives <= 0):
+                    self.alive = False
+                    self.kill()
+                    self.game.player.kill()
+                    return
+                self.invincibleTime = self.game.currentTime + 5  
+                
+        if (pygame.sprite.spritecollide(self, self.game.items, True)): # Collect Rupee when you collide with it
+            self.game.points += RUPEE_VALUE        
 
     # update
     # Updates the player: moves the player
@@ -99,6 +117,7 @@ class Player(pygame.sprite.Sprite):
         previousDirection = self.direction
         previousState = self.state
         self.get_keys()
+        self.checkPlayerCollisions()
         if (self.state != 'rest'): #if the player moved
             self.pos.x += self.vel[0] * self.game.dt
             self.pos.y += self.vel[1] * self.game.dt
@@ -111,25 +130,9 @@ class Player(pygame.sprite.Sprite):
                 self.pos.y -= self.vel[1] * self.game.dt
                 self.rect.topleft = (self.pos.x, self.pos.y)
 
-            collide = pygame.sprite.spritecollideany(self, self.game.enemies)
-
-            if (collide != None):
-                if (not self.isPlayerInvincible()):
-                    self.lives -= 1
-                    if (self.lives <= 0):
-                        self.alive = False
-                        self.kill()
-                        self.game.player.kill()
-                        return
-                    self.invincibleTime = self.game.currentTime + 5
-
-            if (pygame.sprite.spritecollide(self, self.game.items, True)): # Collect Rupee when you collide with it
-                self.game.points += RUPEE_VALUE
-
         elif (previousState == "attack"): # After attacking switch back to a standard image
             self.image_list = self.animation_list["walk"][self.direction]
-            self.image = self.animation()
-
+            self.image = self.animation()    
 
     def isPlayerInvincible(self) -> bool:
         return (self.game.currentTime <= self.invincibleTime)

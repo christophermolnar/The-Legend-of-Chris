@@ -24,7 +24,7 @@ class Map:
                 self.data.append(line)
 
         self.draw_scenery()
-        self.draw_enemy()
+        #self.draw_enemy()
        # self.draw_scoreboard()
 
 
@@ -57,7 +57,8 @@ class Map:
                     Bush(self.game, c, r + SCORE_BOARD_TILES)
                 if (self.data[r][c] == 'R'):
                     Rupee(self.game, c, r + SCORE_BOARD_TILES)
-
+                if (self.data[r][c] == 'O'):
+                    OrangeOcto(self.game, c, r + SCORE_BOARD_TILES)
 
     # draw_scoreboard
     # Draws the scoreboard
@@ -68,5 +69,5 @@ class Map:
 
     # draw_enemies
     # Places the enemies on the map
-    def draw_enemy(self):
-        OrangeOcto(self.game, 25, 25)
+    #def draw_enemy(self):
+        #OrangeOcto(self.game, 25, 25)
