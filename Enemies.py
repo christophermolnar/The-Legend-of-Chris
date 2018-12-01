@@ -2,10 +2,6 @@ import pygame
 import math
 from GameSetting import *
 
-#Enemies Images
-OCTO_UP_1_IMG = pygame.image.load(PICTURE_PATH + "octoDown1.png")
-ENEMIES_SPEED = 75
-
 #Moving Pictures
 OCTO_UP_1_IMG = pygame.image.load(PICTURE_PATH + "octoUp1.png")
 OCTO_UP_2_IMG = pygame.image.load(PICTURE_PATH + "octoUp2.png")
@@ -26,7 +22,7 @@ class Enemies(pygame.sprite.Sprite):
     # __init__
     # Creates a Enemy
     # Parameters: game object, x position of the enemy and y position of the enemy
-    def __init__(self, game, x, y, enemyAnimationDictionary, direction):
+    def __init__(self, game, x, y, enemyAnimationDictionary, direction, xSpeed, ySpeed):
         self.groups = game.all_sprites, game.enemies
         pygame.sprite.Sprite.__init__(self)
         self.game = game
@@ -45,7 +41,7 @@ class Enemies(pygame.sprite.Sprite):
         self.rect.y = y * TILE_SIZE
         self.startPosition = pygame.math.Vector2(x * TILE_SIZE, y * TILE_SIZE)
         self.pos = pygame.math.Vector2(x * TILE_SIZE, y * TILE_SIZE)
-        self.vel = pygame.math.Vector2(ENEMIES_SPEED, 0)
+        self.vel = pygame.math.Vector2(xSpeed, ySpeed)
         self.spotting_distance = 10 * TILE_SIZE
         self.attacking_distance = 5 * TILE_SIZE
         self.speed = 10
@@ -71,9 +67,9 @@ class Enemies(pygame.sprite.Sprite):
             return 'R'
         elif (self.vel[0] < 0 ):
             return 'L'
-        if (self.vel[1] > 0 ):
+        if (self.vel[1] < 0 ):
             return 'U'
-        elif (self.vel[1] < 0 ):
+        elif (self.vel[1] > 0 ):
             return 'D'        
         
     # animation
@@ -165,8 +161,8 @@ class OrangeOcto(Enemies):
     # __init__
     # Creates a OrangeOcto with the Enemies Super Class
     # Parameters: game object, x position of the OrangeOcto and y position of the OrangeOcto
-    def __init__(self, game, x, y):
-        Enemies.__init__(self, game, x, y, OCTO_ANIMATION_DICTIONARY, 'R')
+    def __init__(self, game, x, y, startingDirection, xSpeed, ySpeed):
+        Enemies.__init__(self, game, x, y, OCTO_ANIMATION_DICTIONARY, startingDirection, xSpeed, ySpeed)
         #self.image_list = OCTO_ANIMATION_DICTIONARY[self.direction]
         #self.image = self.image_list[0]
         self.speed = 75

@@ -27,6 +27,9 @@ BROWN = (139, 69, 19)
 # Player Stats
 PLAYER_SPEED = 100
 
+# Enemy Stats
+ENEMIES_SPEED = 75
+
 #Pictures
 PICTURE_PATH = "Pictures/"
 

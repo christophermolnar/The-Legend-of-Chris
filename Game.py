@@ -98,7 +98,7 @@ class Game:
     def draw(self):
             # Game Loop - Draw
             self.screen.fill(GROUND)
-            self.map.draw_grid()
+            #self.map.draw_grid()
             self.scoreboard.draw(self.gameTime, self.points, self.player.lives)
             self.all_sprites.draw(self.screen)
 

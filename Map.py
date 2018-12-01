@@ -24,8 +24,6 @@ class Map:
                 self.data.append(line)
 
         self.draw_scenery()
-        #self.draw_enemy()
-       # self.draw_scoreboard()
 
 
     # draw_text
@@ -58,16 +56,6 @@ class Map:
                 if (self.data[r][c] == 'R'):
                     Rupee(self.game, c, r + SCORE_BOARD_TILES)
                 if (self.data[r][c] == 'O'):
-                    OrangeOcto(self.game, c, r + SCORE_BOARD_TILES)
-
-    # draw_scoreboard
-    # Draws the scoreboard
-    def draw_scoreboard(self):
-        pygame.draw.rect(self.game.screen, PURPLE, (0, 0, WIDTH, SCORE_BOARD_TILES*TILE_SIZE))
-        # MAKE A SCOREBOARD OBJECT STORE SCORE, TIME AND LIVES
-
-
-    # draw_enemies
-    # Places the enemies on the map
-    #def draw_enemy(self):
-        #OrangeOcto(self.game, 25, 25)
+                    OrangeOcto(self.game, c, r + SCORE_BOARD_TILES, 'R', ENEMIES_SPEED, 0)
+                if (self.data[r][c] == 'o'):
+                    OrangeOcto(self.game, c, r + SCORE_BOARD_TILES, 'D', 0, ENEMIES_SPEED)                    
