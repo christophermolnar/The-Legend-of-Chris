@@ -7,7 +7,10 @@ I originally made a similar game in grade 12 but I wanted to improve on it with 
 Some of these improvements are using object oriented principles, following a game loop (update, check events and draw), using 
 superclasses and subclasses, using different data structures, improved collisions and sprite movement/animation, and more.
 
-Credits:
+### Screenshot
+![legendofchrisss](https://user-images.githubusercontent.com/25649937/49332281-a05b0380-f578-11e8-8328-d97654c4a881.PNG)
+
+### Credits:
 
 Game: Christopher Molnar 
 
