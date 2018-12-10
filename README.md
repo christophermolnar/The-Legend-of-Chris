@@ -8,7 +8,7 @@ Some of these improvements are using object oriented principles, following a gam
 superclasses and subclasses, using different data structures, improved collisions and sprite movement/animation, and more.
 
 ### Screenshot
-![legendofchrisss](https://user-images.githubusercontent.com/25649937/49332281-a05b0380-f578-11e8-8328-d97654c4a881.PNG)
+![legendofchrisss2](https://user-images.githubusercontent.com/25649937/49707493-76998080-fbf9-11e8-8b0b-e85f6549fddb.PNG)
 
 ### Credits:
 
