@@ -99,7 +99,8 @@ class Enemies(pygame.sprite.Sprite):
 
         return self.image_list[self.image_index]    
 
-
+    
+    # Not Used
     def move_x(self, destination):
         if (self.pos.x - destination.x > 0):
             self.pos.x -= self.speed * self.game.dt
@@ -107,6 +108,7 @@ class Enemies(pygame.sprite.Sprite):
             self.pos.x += self.speed * self.game.dt
 
 
+    # Not Used
     def move_y(self, destination):
         if (self.pos.y - destination.y > 0):
             self.pos.y -= self.speed * self.game.dt
@@ -114,6 +116,7 @@ class Enemies(pygame.sprite.Sprite):
             self.pos.y += self.speed * self.game.dt
 
 
+    # Not Used
     def calculate_move(self, destination):
 
         differenceInXPosition = math.fabs(self.pos.x - destination.x)
@@ -145,6 +148,8 @@ class Enemies(pygame.sprite.Sprite):
             self.image = self.animation()    
             self.changeDirectionFlag = False
 
+        
+        # *** Not Used Code ***
         #playerPosition = self.game.player.pos
 
         #print("player position: " + self.game.player.pos)
@@ -169,6 +174,7 @@ class Enemies(pygame.sprite.Sprite):
             #print("original position = " + str(self.startPosition))
             #self.calculate_move(self.startPosition)
         ##Retreat
+        # *** Not Used Code ***
 
 
 # OrangeOcto (Sub Class)
